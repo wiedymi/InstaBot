@@ -53,10 +53,10 @@ function GetUserId($url)
     return $data["users"][0]["user"]["pk"];
 }
 
-if(!$_POST){
-    echo "error";
-    die();  
-}
+//if(!$_POST){
+//    echo "error";
+ //   die();  
+//}
 
 $accounts = "accounts.txt";
 $accounts = file($accounts);//file in to an array
@@ -72,9 +72,10 @@ foreach($accounts as $line)
     ];
 }
 
-if((string)$_POST["type"] === "likes") if ($tmp++ < $_POST["num-likes"]){
+if((string)$_POST["type"] === "likes"){
     echo "Success 1";
-    foreach($users as $k => $v)
+    $tmp = 1;
+    foreach($users as $k => $v) if ($tmp++ <= $_POST["num-likes"])
     {
         $instagram->login($v["username"], $v["password"]);
         $media = $_POST["post-url"]; //Input your url
@@ -90,7 +91,8 @@ if((string)$_POST["type"] === "likes") if ($tmp++ < $_POST["num-likes"]){
 
 if((string)$_POST["type"] === "followers"){
     echo "Success 2";
-    foreach($users as $k => $v) if ($tmp++ < $_POST["num-foll"])
+    $tmp = 1;
+    foreach($users as $k => $v) if ($tmp++ <= $_POST["num-foll"])
     {
         $instagram->login($v["username"], $v["password"]);
         $user = $_POST["pro-url"]; //Input your url
@@ -100,4 +102,16 @@ if((string)$_POST["type"] === "followers"){
 
         $instagram->logout();
     }
+}
+
+$tmp = 1;
+foreach($users as $k => $v) if ($tmp++ <= 1)
+{
+    $instagram->login($v["username"], $v["password"]);
+    $user = $_POST["pro-url"]; //Input your url
+    
+    $instagram->likeMedia(GetMediaId("https://www.instagram.com/p/BxAfYk1H-C6/"));
+    echo GetMediaId("https://www.instagram.com/p/BxAfYk1H-C6/");
+
+    $instagram->logout();
 }
