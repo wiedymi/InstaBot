@@ -52,7 +52,7 @@ function GetUserId($url)
 
     return $data["users"][0]["user"]["pk"];
 }
-print_r($_POST);
+
 if(!$_POST){
     echo "error";
     die();  
@@ -73,8 +73,8 @@ foreach($accounts as $line)
 }
 
 
-if($_POST["type" === "likes"]) if ($tmp++ < $_POST["num-likes"]){
-    echo "1";
+if((string)$_POST["type" === "likes"]) if ($tmp++ < $_POST["num-likes"]){
+    echo "Success 1";
     foreach($users as $k => $v)
     {
         $instagram->login($v["username"], $v["password"]);
@@ -87,8 +87,8 @@ if($_POST["type" === "likes"]) if ($tmp++ < $_POST["num-likes"]){
 }
 
 
-if($_POST["type" === "followers"]){
-    echo "2";
+if((string)$_POST["type" === "followers"]){
+    echo "Success 2";
     foreach($users as $k => $v) if ($tmp++ < $_POST["num-foll"])
     {
         $instagram->login($v["username"], $v["password"]);
