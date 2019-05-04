@@ -74,6 +74,7 @@ foreach($accounts as $line)
 }
 
 if((string)$_POST["type"] === "likes"){
+    try {
     echo "Success 1";
     $i = 1;
     foreach($users as $k => $v) if ($tmp++ <= $_POST["num-likes"])
@@ -88,10 +89,15 @@ if((string)$_POST["type"] === "likes"){
         $instagram->logout();
         if ($i++ == $_POST["num-foll"]) break;
     }
+    } catch(Exception $e){
+        //Something went wrong...
+        echo $e->getMessage() . "\n";
+    }
 }
 
 
 if((string)$_POST["type"] === "followers"){
+    try {
     echo "Success 2";
     $i = 1;
     foreach($users as $k => $v)
@@ -104,5 +110,9 @@ if((string)$_POST["type"] === "followers"){
 
         $instagram->logout();
         if ($i++ == $_POST["num-foll"]) break;
+    }
+    } catch(Exception $e){
+        //Something went wrong...
+        echo $e->getMessage() . "\n";
     }
 }
