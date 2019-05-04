@@ -72,7 +72,6 @@ foreach($accounts as $line)
     ];
 }
 
-
 if((string)$_POST["type"] === "likes") if ($tmp++ < $_POST["num-likes"]){
     echo "Success 1";
     foreach($users as $k => $v)
@@ -82,6 +81,8 @@ if((string)$_POST["type"] === "likes") if ($tmp++ < $_POST["num-likes"]){
         
 
         $instagram->likeMedia(GetMediaId($media));
+
+        echo GetUserId($media);
         $instagram->logout();
     }
 }
@@ -95,7 +96,8 @@ if((string)$_POST["type"] === "followers"){
         $user = $_POST["pro-url"]; //Input your url
         
         $instagram->followUser(GetUserId($user));
-        
+        echo GetUserId($user);
+
         $instagram->logout();
     }
 }
