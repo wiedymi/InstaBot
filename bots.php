@@ -1,7 +1,7 @@
 <?php
 ini_set('max_execution_time', 300);
 error_reporting(E_ALL);
-ini_set('display_errors', 1);
+ini_set('display_errors', 0);
 
 require("vendor/autoload.php");
 
@@ -54,10 +54,10 @@ function GetUserId($url)
     return $data["users"][0]["user"]["pk"];
 }
 
-//if(!$_POST){
-//    echo "error";
- //   die();  
-//}
+if(!$_GET){
+   echo "error";
+   die();  
+}
 
 $accounts = "accounts.txt";
 $accounts = file($accounts);//file in to an array
@@ -69,50 +69,117 @@ foreach($accounts as $line)
     $users[] = [
         "username" => $var[0],
         "email" => $var[1],
-        "password" => $var[2],
+        "password" => trim($var[2]),
     ];
 }
 
-if((string)$_POST["type"] === "likes"){
-    try {
-    echo "Success 1";
+if($_GET["type"] === "likes"){
+    $returns = [];
+   
     $i = 1;
-    foreach($users as $k => $v) if ($tmp++ <= $_POST["num-likes"])
+    foreach($users as $k => $v)
     {
+        try {
         $instagram->login($v["username"], $v["password"]);
-        $media = $_POST["post-url"]; //Input your url
+        $media = $_GET["post-url"]; //Input your url
         
 
         $instagram->likeMedia(GetMediaId($media));
 
-        echo GetUserId($media);
+       
+        $returns[] = [
+            "status" => "success",
+            "username" => $v["username"],
+            "email" => $v["email"],
+        ];
         $instagram->logout();
-        if ($i++ == $_POST["num-foll"]) break;
+      
+        } catch(Exception $e){
+            $returns[] = [
+                "status" => "error",
+                "message" => $e->getMessage(),
+                "email" => $v["email"],
+                "username" => $v["username"],
+                "password" => $v["password"]
+            ];
+        }
+        if ($i++ == $_GET["num-likes"]) break;
     }
-    } catch(Exception $e){
-        //Something went wrong...
-        echo $e->getMessage() . "\n";
-    }
+   
+    
 }
 
 
-if((string)$_POST["type"] === "followers"){
-    try {
-    echo "Success 2";
-    $i = 1;
+if($_GET["type"] === "followers"){
+    $returns = [];
+    
+    (int)$i = 1;
     foreach($users as $k => $v)
     {
+        try {
         $instagram->login($v["username"], $v["password"]);
-        $user = $_POST["pro-url"]; //Input your url
+        $user = $_GET["pro-url"]; //Input your url
         
         $instagram->followUser(GetUserId($user));
-        echo GetUserId($user);
-
+        
+        $returns[] = [
+            "status" => "success",
+            "username" => $v["username"],
+            "email" => $v["email"],
+        ];
         $instagram->logout();
-        if ($i++ == $_POST["num-foll"]) break;
+      
+        } catch(Exception $e){
+            $returns[] = [
+                "status" => "failed",
+                "message" => $e->getMessage(),
+                "email" => $v["email"],
+                "username" => $v["username"],
+                "password" => $v["password"]
+            ];
+        }
+        if ($i++ == $_GET["num-foll"]) break;
     }
-    } catch(Exception $e){
-        //Something went wrong...
-        echo $e->getMessage() . "\n";
-    }
+  
+    
 }
+$returnsSuccess = array_search('success', array_column($returns, 'status'));
+$returnsFails = array_search('failed', array_column($returns, 'status'));
+var_dump($returns);
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <link rel="stylesheet" href="css/app.css">
+    <script src="js/jquery.min.js"></script>
+    <title>InstaBot</title>
+</head>
+<body>
+    <header>
+        <div>
+            <h1>InstaBot - Results</h1>
+        </div>
+    </header>
+    <div class="container">
+        <div class="grid-12">
+            <h2>SUCCESS: <?php echo count($returnsSuccess);?></h2>
+        </div>
+        <div class="grid-12">
+            <h2>FAIlS: <?php echo count($returnsFails);?></h2>
+            <?php foreach($returns as $k): ?>
+            <div class="grid-12">
+                <p>User: <?php echo $k["username"]; ?></p>
+                <p>Message:</p>
+                <p>
+                <?php echo $k["message"]; ?>
+                </p>
+            </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+</body>
+</html>
