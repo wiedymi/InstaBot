@@ -1,0 +1,5 @@
+{
+    "require": {
+        "liamcottle/instagram-sdk-php": "^1.0"
+    }
+}

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <link rel="stylesheet" href="css/app.css">
+    <script src="js/jquery.min.js"></script>
+    <title>InstaBot</title>
+</head>
+<body>
+    <header>
+        <div>
+            <h1>InstaBot</h1>
+        </div>
+    </header>
+    <div class="container">
+        <div class="grid-12">
+            <h2>AUTO LIKES</h2>
+            <form action="bots.php" method="POST">
+                <input id="num-likes" type="number" name="num-likes" placeholder="Number of likes">
+                <input id="post-url" type="text" name="post-url" placeholder="Post URL">
+                <input type="text" name="type" value="likes" hidden style="display: none;">
+                <button type="submit">GO</button>
+            </form>
+        </div>
+        <div class="grid-12">
+            <h2>AUTO FOLLOWS</h2>
+            <form action="bots.php" method="POST">
+                <input id="num-foll" type="number" name="num-foll" placeholder="Number of followers">
+                <input id="pro-url" type="text" name="pro-url" placeholder="Profile URL">
+                <input type="text" name="type" value="followers" hidden style="display: none;">
+                <button type="submit">GO</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
