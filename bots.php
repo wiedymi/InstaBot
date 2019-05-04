@@ -103,15 +103,3 @@ if((string)$_POST["type"] === "followers"){
         $instagram->logout();
     }
 }
-
-$tmp = 1;
-foreach($users as $k => $v) if ($tmp++ <= 1)
-{
-    $instagram->login($v["username"], $v["password"]);
-    $user = $_POST["pro-url"]; //Input your url
-    
-    $instagram->likeMedia(GetMediaId("https://www.instagram.com/p/BxAfYk1H-C6/"));
-    echo GetMediaId("https://www.instagram.com/p/BxAfYk1H-C6/");
-
-    $instagram->logout();
-}
