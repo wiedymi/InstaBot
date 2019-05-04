@@ -73,7 +73,7 @@ foreach($accounts as $line)
 }
 
 
-if((string)$_POST["type" === "likes"]) if ($tmp++ < $_POST["num-likes"]){
+if((string)$_POST["type"] === "likes") if ($tmp++ < $_POST["num-likes"]){
     echo "Success 1";
     foreach($users as $k => $v)
     {
@@ -87,7 +87,7 @@ if((string)$_POST["type" === "likes"]) if ($tmp++ < $_POST["num-likes"]){
 }
 
 
-if((string)$_POST["type" === "followers"]){
+if((string)$_POST["type"] === "followers"){
     echo "Success 2";
     foreach($users as $k => $v) if ($tmp++ < $_POST["num-foll"])
     {
