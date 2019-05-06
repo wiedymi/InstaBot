@@ -6,6 +6,26 @@ ini_set('display_errors', 0);
 require("vendor/autoload.php");
 
 $instagram = new \Instagram\Instagram();
+$accounts = "accounts.txt";
+$accounts = file($accounts);//file in to an array
+$i = 0;
+foreach($accounts as $line) 
+{
+    $var = explode(' ', $line, 3);
+    $users[] = [
+        "username" => $var[0],
+        "email" => $var[1],
+        "password" => trim($var[2]),
+    ];
+    $i++;
+    if($i === 2) break;
+}
+
+$verifications = [];
+foreach ($users as $key => $value) {
+    $verifications[$value["username"]] = json_decode(file_get_contents('verification/'.$value["username"].'.json'), true);
+}
+
 
 function GetMediaId($url) {
  
@@ -62,6 +82,8 @@ if(!$_GET){
 $accounts = "accounts.txt";
 $accounts = file($accounts);//file in to an array
 
+$proxy = "proxy.txt";
+$proxy = file($proxy);//file in to an array
 
 foreach($accounts as $line) 
 {
@@ -73,6 +95,13 @@ foreach($accounts as $line)
     ];
 }
 
+foreach($proxy as $line) 
+{
+    $var = trim($line);
+    $proxies[] = $var;
+}
+shuffle($proxies);
+
 if($_GET["type"] === "likes"){
     $returns = [];
    
@@ -80,7 +109,16 @@ if($_GET["type"] === "likes"){
     foreach($users as $k => $v)
     {
         try {
-        $instagram->login($v["username"], $v["password"]);
+        foreach ($proxies as $key => $value) {
+            $proxy = $value;
+            if ($i === $_GET["num-likes"]) break;
+        }
+        //$instagram->setProxy($proxy);
+        $instagram->setVerifyPeer(true);
+        
+      
+        $instagram->initFromSavedSession($verifications[$v["username"]][$v["username"]]);
+
         $media = $_GET["post-url"]; //Input your url
         
 
@@ -93,16 +131,20 @@ if($_GET["type"] === "likes"){
             "email" => $v["email"],
         ];
         $instagram->logout();
-      
+        
         } catch(Exception $e){
+         
             $returns[] = [
-                "status" => "error",
+                "status" => "failed",
                 "message" => $e->getMessage(),
                 "email" => $v["email"],
+                "proxy" => $proxy,
                 "username" => $v["username"],
-                "password" => $v["password"]
+                "password" => $v["password"],
+                "save" =>  $verifications[$v["username"]][$v["username"]]
             ];
         }
+        sleep(2);
         if ($i++ == $_GET["num-likes"]) break;
     }
    
@@ -112,12 +154,22 @@ if($_GET["type"] === "likes"){
 
 if($_GET["type"] === "followers"){
     $returns = [];
-    
+    $proxy = [];
+   
     (int)$i = 1;
     foreach($users as $k => $v)
     {
         try {
-        $instagram->login($v["username"], $v["password"]);
+        foreach ($proxies as $key => $value) {
+            $proxy = $value;
+            if ($i == $_GET["num-foll"]) break;
+        }
+       
+        //$instagram->setProxy( $proxy );
+        //$instagram->setVerifyPeer(true);
+     
+        $instagram->initFromSavedSession($verifications[$v["username"]][$v["username"]]);
+     
         $user = $_GET["pro-url"]; //Input your url
         
         $instagram->followUser(GetUserId($user));
@@ -125,15 +177,18 @@ if($_GET["type"] === "followers"){
         $returns[] = [
             "status" => "success",
             "username" => $v["username"],
+            "message" => "Done.",
             "email" => $v["email"],
         ];
-        $instagram->logout();
+        var_dump($instagram->logout());
       
         } catch(Exception $e){
+          
             $returns[] = [
                 "status" => "failed",
                 "message" => $e->getMessage(),
                 "email" => $v["email"],
+                "proxy" => $proxy,
                 "username" => $v["username"],
                 "password" => $v["password"]
             ];
@@ -145,7 +200,9 @@ if($_GET["type"] === "followers"){
 }
 $returnsSuccess = array_search('success', array_column($returns, 'status'));
 $returnsFails = array_search('failed', array_column($returns, 'status'));
+
 var_dump($returns);
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -166,10 +223,10 @@ var_dump($returns);
     </header>
     <div class="container">
         <div class="grid-12">
-            <h2>SUCCESS: <?php echo count($returnsSuccess);?></h2>
+            <h2>SUCCESS: <?php ?></h2>
         </div>
         <div class="grid-12">
-            <h2>FAIlS: <?php echo count($returnsFails);?></h2>
+            <h2>FAIlS: <?php ?></h2>
             <?php foreach($returns as $k): ?>
             <div class="grid-12">
                 <p>User: <?php echo $k["username"]; ?></p>
